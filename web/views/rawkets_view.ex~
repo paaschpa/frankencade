@@ -1,0 +1,3 @@
+defmodule Frankencode.RawketsView do
+    use Frankencode.Web, :view
+end
