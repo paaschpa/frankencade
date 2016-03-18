@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0; maximum-scale=1.0; user-scalable=0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Hello Phoenix!</title>
+    <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
+  </head>
+
+  <body>
+    <script src="/js/rawkets/jquery-1.11.2.min.js"></script>
+    <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
+    <script>require("web/static/js/app")</script>
+    <div class="container" role="main">
+      
+
+      <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
+      <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
+
+  <style>
+  button.move {
+    width:150px;
+    height:50px
+  }
+  </style>
+    <h2>MOBILE</h2>
+    enter game code: <input type="text" id="game_code"/><button cls="btn" id="enter_game_code">Enter</button>
+    <p>
+      move player with arrow keys
+    </p>
+
+    <div class="table-responsive">
+      <table class="table">
+        <tr>
+          <td></td>
+          <td><button type="button" class="move" data-move="38">UP</button></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td><button type="button" class="move" data-move="37">LEFT</button></td>
+          <td></td>
+          <td><button type="button" class="move" data-move="39">RIGHT</button></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td><button type="button" class="move" data-move="40">DOWN</button></td>
+          <td></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+    <script type="text/javascript" src="/js/rawkets/bison.js"></script>
+    <script type="text/javascript" src="/js/rawkets/Sound.js"></script>
+    <script type="text/javascript" src="/js/rawkets/Socket.js"></script>
+    <script type="text/javascript" src="/js/rawkets/Vector.js"></script>
+    <script type="text/javascript" src="/js/rawkets/Rocket.js"></script>
+    <script type="text/javascript" src="/js/rawkets/Bullet.js"></script>
+    <script type="text/javascript" src="/js/rawkets/Player.js"></script>
+    <script type="text/javascript" src="/js/rawkets/Viewport.js"></script>
+    <script type="text/javascript" src="/js/rawkets/Star.js"></script>
+    <script type="text/javascript" src="/js/rawkets/Game.js"></script>
+    <script type="text/javascript" src="/js/rawkets/mainController.js"></script>
+
+
+  </body>
+  </html>
+

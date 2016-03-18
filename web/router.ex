@@ -17,6 +17,7 @@ defmodule Frankencade.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", RawketsController, :index
+    get "/controller", RawketsController, :controller
   end
 
   # Other scopes may use custom stacks.
