@@ -62,7 +62,7 @@
     <script type="text/javascript" src="/js/rawkets/Player.js"></script>
     <script type="text/javascript" src="/js/rawkets/Viewport.js"></script>
     <script type="text/javascript" src="/js/rawkets/Star.js"></script>
-    <script type="text/javascript" src="/js/rawkets/Game.js"></script>
+    <script type="text/javascript" src="/js/rawkets/Controller.js"></script>
     <script type="text/javascript" src="/js/rawkets/mainController.js"></script>
 
 
