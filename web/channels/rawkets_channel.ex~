@@ -47,13 +47,13 @@ defmodule Frankencade.RawketsChannel do
     #in NewPlayer out...
     def handle_in(@message_type_new_player, %{"x" => x, "y" => y, "a" => a, "f" => f, "i" => i}, socket) do
       #type set color
-      p = %HelloPhoenix.Player{id: socket.id, name: i, x: x, y: y, angle: a, showFlame: f, color: "rgb(199, 68, 145)", killCount: 0, alive: true}
+      p = %Frankencade.Player{id: socket.id, name: i, x: x, y: y, angle: a, showFlame: f, color: "rgb(199, 68, 145)", killCount: 0, alive: true}
 
       #set color
-      push socket, @message_type_set_colour, %{i: i, c: "rgb(199, 68, 145)"}
+      push socket, @message_type_set_colour, %{i: i, c: "rgb(255, 1, 1)"}
 
       #tell everyone about new player
-      broadcast! socket, @message_type_new_player, %{i: socket.id, x: x, y: y, a: a, c: "rgb(199, 68, 145)", f: f, n: i, k: 0} 
+      broadcast! socket, @message_type_new_player, %{i: socket.id, x: x, y: y, a: a, c: "rgb(255, 1, 1)", f: f, n: i, k: 0} 
 
       #tell new player about everyone
       all_players = Frankencade.GameAgent.get_players() 

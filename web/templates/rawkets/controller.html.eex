@@ -14,44 +14,37 @@
     <script src="/js/rawkets/jquery-1.11.2.min.js"></script>
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
     <script>require("web/static/js/app")</script>
+
     <div class="container" role="main">
-      
 
       <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
       <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
 
-  <style>
-  button.move {
-    width:150px;
-    height:50px
-  }
-  </style>
-    <h2>MOBILE</h2>
-    enter game code: <input type="text" id="game_code"/><button cls="btn" id="enter_game_code">Enter</button>
-    <p>
-      move player with arrow keys
-    </p>
+      <style>
+        button.move {
+          width:80px;
+          height:50px;
+          -webkit-user-select: none;
+        }
+      </style>
 
-    <div class="table-responsive">
-      <table class="table">
-        <tr>
-          <td></td>
-          <td><button type="button" class="move" data-move="38">UP</button></td>
-          <td></td>
-        </tr>
-        <tr>
-          <td><button type="button" class="move" data-move="37">LEFT</button></td>
-          <td></td>
-          <td><button type="button" class="move" data-move="39">RIGHT</button></td>
-        </tr>
-        <tr>
-          <td></td>
-          <td><button type="button" class="move" data-move="40">DOWN</button></td>
-          <td></td>
-        </tr>
-      </table>
+      <div class="table-responsive controller">
+        <table class="table">
+          <tr>
+            <td></td>
+            <td><button type="button" class="move" data-move="38"></button></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td><button type="button" class="move" data-move="37"></button></td>
+            <td></td>
+            <td><button type="button" class="move" data-move="39"></button></td>
+            <td style="padding-left:75px;"><button type="button" class="move" style="width:115px" data-move="32">PEW PEW</button></td>
+          </tr>
+        </table>
+      </div>
     </div>
-  </div>
 
     <script type="text/javascript" src="/js/rawkets/bison.js"></script>
     <script type="text/javascript" src="/js/rawkets/Sound.js"></script>
@@ -66,9 +59,6 @@
     <script type="text/javascript" src="/js/rawkets/mainController.js"></script>
 
 
-    <script>
-      
-    </script>
   </body>
-  </html>
+</html>
 
