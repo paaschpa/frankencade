@@ -7,11 +7,15 @@
 /**
  * @constructor
  */
-var Game = function(player_id) {
+var Controller = function(player_id, color) {
     this.player_id = player_id;
+    this.color = color 
 	this.authenticated = false;
+	this.viewport = new Viewport(800,600);
+    this.stars = [];
+    this.players = [];
+    this.bullets = [];
 	
-	this.mask = $("#mask");
 	this.offline = $("#offline");
 	
 	this.socket = new Socket(player_id);
@@ -21,76 +25,57 @@ var Game = function(player_id) {
 /**
  * Message protocols
  */
-Game.MESSAGE_TYPE_PING = '1';
-Game.MESSAGE_TYPE_UPDATE_PING = '2';
-Game.MESSAGE_TYPE_NEW_PLAYER = '3';
-Game.MESSAGE_TYPE_SET_COLOUR = '4';
-Game.MESSAGE_TYPE_UPDATE_PLAYER = '5';
-Game.MESSAGE_TYPE_REMOVE_PLAYER = '6';
-Game.MESSAGE_TYPE_AUTHENTICATION_PASSED = '7';
-Game.MESSAGE_TYPE_AUTHENTICATION_FAILED = '8';
-Game.MESSAGE_TYPE_AUTHENTICATE = '9';
-Game.MESSAGE_TYPE_ERROR = '10';
-Game.MESSAGE_TYPE_ADD_BULLET = '11';
-Game.MESSAGE_TYPE_UPDATE_BULLET = '12';
-Game.MESSAGE_TYPE_REMOVE_BULLET = '13';
-Game.MESSAGE_TYPE_KILL_PLAYER = '14';
-Game.MESSAGE_TYPE_UPDATE_KILLS = '15';
-Game.MESSAGE_TYPE_REVIVE_PLAYER = '16';
+Controller.MESSAGE_TYPE_PING = '1';
+Controller.MESSAGE_TYPE_UPDATE_PING = '2';
+Controller.MESSAGE_TYPE_NEW_PLAYER = '3';
+Controller.MESSAGE_TYPE_SET_COLOUR = '4';
+Controller.MESSAGE_TYPE_UPDATE_PLAYER = '5';
+Controller.MESSAGE_TYPE_REMOVE_PLAYER = '6';
+Controller.MESSAGE_TYPE_AUTHENTICATION_PASSED = '7';
+Controller.MESSAGE_TYPE_AUTHENTICATION_FAILED = '8';
+Controller.MESSAGE_TYPE_AUTHENTICATE = '9';
+Controller.MESSAGE_TYPE_ERROR = '10';
+Controller.MESSAGE_TYPE_ADD_BULLET = '11';
+Controller.MESSAGE_TYPE_UPDATE_BULLET = '12';
+Controller.MESSAGE_TYPE_REMOVE_BULLET = '13';
+Controller.MESSAGE_TYPE_KILL_PLAYER = '14';
+Controller.MESSAGE_TYPE_UPDATE_KILLS = '15';
+Controller.MESSAGE_TYPE_REVIVE_PLAYER = '16';
 
 /**
  * Initialise game environment
  */
-Game.prototype.initGame = function() {
-	this.sound = new Sound();
-	this.sound.play("background");
-	
-	this.canvas = $("#canvas");
-	this.ctx = this.canvas.get(0).getContext("2d");
-	this.resizeCanvas();
-	this.stopAnimation = false;
+Controller.prototype.initController = function() {
 	
 	this.ping = $("#ping");
 	
 	this.player = null;	
-	this.players = [];
-	
-	this.bullets = [];
-	
-	this.viewport = new Viewport(this.canvas.width(), this.canvas.height());
-	this.createStars();
-	
-	this.canvas.fadeIn();
-	
+	//this.players = [];
+	//this.bullets = [];
 	this.haltMessages = false;
 	
 	// Initialise player object if one doesn't exist yet
 	if (this.player == null) {
-        var rnd1 =  Math.round(Math.random()*255) + 1;
-        var rnd2 =  Math.round(Math.random()*255) + 1;
-        var rnd3 =  Math.round(Math.random()*255) + 1;
-        var color = 'rgb(' + rnd1 + ', ' + rnd2 + ',' + rnd3 + ')';
-		//this.player = new Player(1000.0, 1000.0);
 		this.player = new Player(250.0, 250.0);
         this.player.id = this.player_id;
 
-        this.socket.push(Game.MESSAGE_TYPE_NEW_PLAYER, {
+        this.socket.push(Controller.MESSAGE_TYPE_NEW_PLAYER, {
           x: this.player.pos.x, 
           y: this.player.pos.y, 
           a: this.player.rocket.angle, 
           f: this.player.rocket.showFlame, 
           i: this.player.id,
-          c: color});
+          c: this.color}
+          );
 
-        this.timeout();
+		this.timeout();
 	};
-
 };
 
 /**
  * Initialises socket event listeners
  */
-Game.prototype.initSocketListeners = function() {
+Controller.prototype.initSocketListeners = function() {
 	// Horrible passing of game object due to event closure
 	var self = this;
 	
@@ -100,18 +85,18 @@ Game.prototype.initSocketListeners = function() {
     });
 
     //authenticate
-    this.socket.on(Game.MESSAGE_TYPE_AUTHENTICATE, function(payload) {
+    this.socket.on(Controller.MESSAGE_TYPE_AUTHENTICATE, function(payload) {
         console.log(payload);
     });
 
     //authenticate passed
-	this.socket.on(Game.MESSAGE_TYPE_AUTHENTICATION_PASSED, function(payload) {
+	this.socket.on(Controller.MESSAGE_TYPE_AUTHENTICATION_PASSED, function(payload) {
         self.authenticated = true;
-        self.initGame();
+        self.initController();
     });
 
     //type set color
-    this.socket.on(Game.MESSAGE_TYPE_SET_COLOUR, function(data) {
+    this.socket.on(Controller.MESSAGE_TYPE_SET_COLOUR, function(data) {
         if (self.player.id == null) {
             self.player.id = data.i;
         };
@@ -123,7 +108,7 @@ Game.prototype.initSocketListeners = function() {
     })
 
     //new player
-    this.socket.on(Game.MESSAGE_TYPE_NEW_PLAYER, function(data) {
+    this.socket.on(Controller.MESSAGE_TYPE_NEW_PLAYER, function(data) {
         if (data.i == self.player.id) {
           return;
         }
@@ -137,11 +122,11 @@ Game.prototype.initSocketListeners = function() {
         player.rocket.angle = data.a;
         player.rocket.colour = player.rocket.originalColour = data.c;
         player.rocket.showFlame = data.f;
-        self.players.push(player);
+        //self.players.push(player);
     });
 
     //update player
-    this.socket.on(Game.MESSAGE_TYPE_UPDATE_PLAYER, function(data) {
+    this.socket.on(Controller.MESSAGE_TYPE_UPDATE_PLAYER, function(data) {
         if (data.i == self.player.id) {
           return;
         }
@@ -156,21 +141,21 @@ Game.prototype.initSocketListeners = function() {
     })
 
     //remove player
-    this.socket.on(Game.MESSAGE_TYPE_REMOVE_PLAYER, function(data) {
-        self.players.splice(self.players.indexOf(self.getPlayerById(data.i)), 1);
+    this.socket.on(Controller.MESSAGE_TYPE_REMOVE_PLAYER, function(data) {
+        //self.players.splice(self.players.indexOf(self.getPlayerById(data.i)), 1);
     });
     
     //Add Bullet
-    this.socket.on(Game.MESSAGE_TYPE_ADD_BULLET, function(data) {
+    this.socket.on(Controller.MESSAGE_TYPE_ADD_BULLET, function(data) {
         var bullet = new Bullet();
         bullet.id = data.i;
         bullet.worldPos.set(data.x, data.y);
 	    self.bullets.push(bullet);
-        self.sound.play("laser"); // This plays for all bullets right now
+        //self.sound.play("laser"); // This plays for all bullets right now
     });
 
     //Update Bullets
-    this.socket.on(Game.MESSAGE_TYPE_UPDATE_BULLET, function(data) {
+    this.socket.on(Controller.MESSAGE_TYPE_UPDATE_BULLET, function(data) {
       var bullet = self.getBulletById(data.i);
       if (bullet) {
         bullet.worldPos.x = data.x;
@@ -179,7 +164,7 @@ Game.prototype.initSocketListeners = function() {
     });
 
     //Remove Bullets
-    this.socket.on(Game.MESSAGE_TYPE_REMOVE_BULLET, function(data) {
+    this.socket.on(Controller.MESSAGE_TYPE_REMOVE_BULLET, function(data) {
       var bullet = self.getBulletById(data.i);
       if (bullet) {
         self.bullets.splice(self.bullets.indexOf(bullet), 1);
@@ -187,21 +172,21 @@ Game.prototype.initSocketListeners = function() {
     }); 
 
     //Kill player
-    this.socket.on(Game.MESSAGE_TYPE_KILL_PLAYER, function(data) { 
+    this.socket.on(Controller.MESSAGE_TYPE_KILL_PLAYER, function(data) { 
         if (self.player.id == data.i) {
             self.player.kill(this.viewport);
             setTimeout(function() {
-                //var msg = Game.formatMessage(Game.MESSAGE_TYPE_REVIVE_PLAYER, {});
-                self.socket.push(Game.MESSAGE_TYPE_REVIVE_PLAYER, {i: self.player.id});
+                //var msg = Controller.formatMessage(Controller.MESSAGE_TYPE_REVIVE_PLAYER, {});
+                self.socket.push(Controller.MESSAGE_TYPE_REVIVE_PLAYER, {i: self.player.id});
                 self.player.allowedToShoot = true;
             }, 4000);
         // Remote player killed
         } else {
-            var player = self.getPlayerById(data.i);
-            player.kill();
+            //var player = self.getPlayerById(data.i);
+            //player.kill();
         };
         
-        self.sound.play("die");
+        //self.sound.play("die");
         //update kill count
         if (self.player.id == data.ik) {
             self.player.killCount = data.k;
@@ -221,20 +206,20 @@ Game.prototype.initSocketListeners = function() {
 /**
  * Authenticate player on the server
  */
-Game.prototype.authenticate = function() {
-	//var msg = Game.formatMessage(Game.MESSAGE_TYPE_AUTHENTICATE, {tat: this.twitterAccessToken, tats: this.twitterAccessTokenSecret});
+Controller.prototype.authenticate = function() {
+	//var msg = Controller.formatMessage(Controller.MESSAGE_TYPE_AUTHENTICATE, {tat: this.twitterAccessToken, tats: this.twitterAccessTokenSecret});
 	//this.socket.send(msg);
-  //var msg = {type: Game.MESSAGE_TYPE_AUTHENTICATE, tat: '', tats:''}
+  //var msg = {type: Controller.MESSAGE_TYPE_AUTHENTICATE, tat: '', tats:''}
   var msg = {tat: 'test', tats: 'test'};
-  this.socket.push(Game.MESSAGE_TYPE_AUTHENTICATE, msg);
+  this.socket.push(Controller.MESSAGE_TYPE_AUTHENTICATE, msg);
 };
 
 /**
  * Main animation loop
  */
-Game.prototype.timeout = function() {
+Controller.prototype.timeout = function() {
 	this.update();
-	this.draw();
+	//this.draw();
 	
 	//console.log(this.player.sendUpdate);
 	if (this.player.sendUpdate) {
@@ -242,9 +227,9 @@ Game.prototype.timeout = function() {
 	};
 	
 	if (this.player.teleport) {
-		this.createStars();
+		//this.createStars();
 		this.player.teleport = false;
-		this.sound.play("respawn"); // Probably should be in a proper respawn handler
+		//this.sound.play("respawn"); // Probably should be in a proper respawn handler
 	};
 
 	// Horrible passing of game object due to event closure
@@ -258,7 +243,7 @@ Game.prototype.timeout = function() {
 /**
  * Update game elements
  */
-Game.prototype.update = function() {
+Controller.prototype.update = function() {
 	this.player.update(this.viewport); // Really shouldn't have to pass the viewport here
 
 	if (!this.viewport.withinWorldBounds(this.player.pos.x, this.player.pos.y)) {
@@ -328,7 +313,7 @@ Game.prototype.update = function() {
 	};
 		
 	if (this.player.fireGun && this.player.allowedToShoot && this.player.alive) {
-        this.socket.push(Game.MESSAGE_TYPE_ADD_BULLET, {
+        this.socket.push(Controller.MESSAGE_TYPE_ADD_BULLET, {
                     x: this.player.pos.x, 
                     y: this.player.pos.y, 
                     vX: this.player.rocket.velocity.x+(Math.sin(this.player.rocket.angle)*15), 
@@ -341,7 +326,7 @@ Game.prototype.update = function() {
 /**
  * Draw game elements onto the canvas
  */
-Game.prototype.draw = function() {
+Controller.prototype.draw = function() {
 	this.ctx.clearRect(0, 0, this.canvas.width(), this.canvas.height());
 	
 	this.viewport.draw(this.ctx);
@@ -464,7 +449,7 @@ Game.prototype.draw = function() {
 /**
  * Create stars
  */
-Game.prototype.createStars = function() {
+Controller.prototype.createStars = function() {
 	this.stars = [];
 	this.starsOriginalWidth = this.canvas.width();
 	this.starsOriginalHeight = this.canvas.height();
@@ -476,14 +461,14 @@ Game.prototype.createStars = function() {
 /**
  * Send updated player position to server
  */
-Game.prototype.sendPlayerPosition = function() {
+Controller.prototype.sendPlayerPosition = function() {
 	//console.log("Send update");
 	// Crude rate limiter - should really build this into the core functionality of sending messages
 	if (!this.haltMessages) {
 		self = this;
 		self.haltMessages = true;
 		setTimeout(function() {
-            self.socket.push(Game.MESSAGE_TYPE_UPDATE_PLAYER, {
+            self.socket.push(Controller.MESSAGE_TYPE_UPDATE_PLAYER, {
                 x: self.player.pos.x, 
                 y: self.player.pos.y, 
                 a: self.player.rocket.angle, 
@@ -497,7 +482,7 @@ Game.prototype.sendPlayerPosition = function() {
 /**
  * Keyboard input down
  */
-Game.prototype.keyDown = function(e) {
+Controller.prototype.keyDown = function(e) {
 	var keyCode = e.keyCode;
 	// Refer to key codes using descriptive variables (enumeration)
 	var space = 32;
@@ -518,7 +503,7 @@ Game.prototype.keyDown = function(e) {
 		case arrow.up:
 			if (!self.player.move && self.player.alive) {
 				self.player.moveForward();
-				self.sound.play("thrust");
+				//self.sound.play("thrust");
 			};
 			break;
 		case arrow.down:
@@ -532,7 +517,7 @@ Game.prototype.keyDown = function(e) {
 /**
  * Keyboard input up
  */
-Game.prototype.keyUp = function(e) {
+Controller.prototype.keyUp = function(e) {
 	var keyCode = e.keyCode;
 	// Refer to key codes using descriptive variables (enumeration)
 	var space = 32;
@@ -550,7 +535,7 @@ Game.prototype.keyUp = function(e) {
 			break;
 		case arrow.up:
 			self.player.haltMove();
-			self.sound.stop("thrust");
+			//self.sound.stop("thrust");
 			break;
 		case arrow.down:
 			break;
@@ -567,7 +552,7 @@ Game.prototype.keyUp = function(e) {
  * @returns Player object with specified id
  * @type Player
  */
-Game.prototype.getPlayerById = function(id) {
+Controller.prototype.getPlayerById = function(id) {
 	var playersLength = this.players.length;
 	
 	for (var i = 0; i < playersLength; i++) {
@@ -585,7 +570,7 @@ Game.prototype.getPlayerById = function(id) {
  * @returns Bullet object with specified id
  * @type Bullet
  */
-Game.prototype.getBulletById = function(id) {
+Controller.prototype.getBulletById = function(id) {
 	var bulletsLength = this.bullets.length;
 	
 	for (var i = 0; i < bulletsLength; i++) {
@@ -604,7 +589,7 @@ Game.prototype.getBulletById = function(id) {
  * @returns Formatted message encoded with BiSON. Eg. {type: "update", message: "Hello World"}
  * @type String
  */
-Game.formatMessage = function(type, args) {
+Controller.formatMessage = function(type, args) {
 	var msg = {type: type};
 
 	for (var arg in args) {
@@ -620,7 +605,7 @@ Game.formatMessage = function(type, args) {
 /**
  * Resizes the canvas element to the same dimensions as the browser window
  */
-Game.prototype.resizeCanvas = function(e) {
+Controller.prototype.resizeCanvas = function(e) {
 	// Horrible passing of game object due to event closure
 	var self = (e != null) ? e.data.self : this;
 	

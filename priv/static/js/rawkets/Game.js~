@@ -70,7 +70,8 @@ Game.prototype.initGame = function() {
         var rnd2 =  Math.round(Math.random()*255) + 1;
         var rnd3 =  Math.round(Math.random()*255) + 1;
         var color = 'rgb(' + rnd1 + ', ' + rnd2 + ',' + rnd3 + ')';
-		this.player = new Player(1000.0, 1000.0);
+		//this.player = new Player(1000.0, 1000.0);
+		this.player = new Player(250.0, 250.0);
         this.player.id = this.player_id;
 
         this.socket.push(Game.MESSAGE_TYPE_NEW_PLAYER, {
@@ -81,8 +82,9 @@ Game.prototype.initGame = function() {
           i: this.player.id,
           c: color});
 
-		this.timeout();
+        this.timeout();
 	};
+
 };
 
 /**

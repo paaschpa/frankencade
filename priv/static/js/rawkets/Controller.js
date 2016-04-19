@@ -56,7 +56,7 @@ Controller.prototype.initController = function() {
 	
 	// Initialise player object if one doesn't exist yet
 	if (this.player == null) {
-		this.player = new Player(1000.0, 1000.0);
+		this.player = new Player(250.0, 250.0);
         this.player.id = this.player_id;
 
         this.socket.push(Controller.MESSAGE_TYPE_NEW_PLAYER, {
@@ -151,7 +151,7 @@ Controller.prototype.initSocketListeners = function() {
         bullet.id = data.i;
         bullet.worldPos.set(data.x, data.y);
 	    self.bullets.push(bullet);
-        self.sound.play("laser"); // This plays for all bullets right now
+        //self.sound.play("laser"); // This plays for all bullets right now
     });
 
     //Update Bullets
@@ -182,18 +182,18 @@ Controller.prototype.initSocketListeners = function() {
             }, 4000);
         // Remote player killed
         } else {
-            var player = self.getPlayerById(data.i);
-            player.kill();
+            //var player = self.getPlayerById(data.i);
+            //player.kill();
         };
         
-        self.sound.play("die");
+        //self.sound.play("die");
         //update kill count
         if (self.player.id == data.ik) {
             self.player.killCount = data.k;
             // Remote player
 		} else {
-            var player = self.getPlayerById(data.ik);
-            player.killCount = data.k;
+            //var player = self.getPlayerById(data.ik);
+            //player.killCount = data.k;
         };
     
     });
@@ -229,7 +229,7 @@ Controller.prototype.timeout = function() {
 	if (this.player.teleport) {
 		//this.createStars();
 		this.player.teleport = false;
-		this.sound.play("respawn"); // Probably should be in a proper respawn handler
+		//this.sound.play("respawn"); // Probably should be in a proper respawn handler
 	};
 
 	// Horrible passing of game object due to event closure
