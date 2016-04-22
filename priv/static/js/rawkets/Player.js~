@@ -133,9 +133,6 @@ Player.prototype.updateTrail = function (viewport) {
  * Draw player
  */
 Player.prototype.draw = function(ctx) {
-    if (this.id == 'screen') {
-        return;
-    }
 	this.rocket.draw(ctx, this.active);
 	
 	/*var bulletsLength = this.bullets.length;
