@@ -1,10 +1,3 @@
-TODO
-+connect to rawkets network
-+open ssh to PI 2
-+open command line
-+set up PI2 start app open browser
-
-
 FRESH
 + mix deps.get --only prod
 
