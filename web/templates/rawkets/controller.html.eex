@@ -11,6 +11,16 @@
   </head>
 
   <body>
+    <style>
+      .img-flip {
+        -moz-transform: scaleX(-1);
+        -o-transform: scaleX(-1);
+        -webkit-transform: scaleX(-1);
+        transform: scaleX(-1);
+        filter: FlipH;
+        -ms-filter: "FlipH";
+      }
+    </style>
     <script src="/js/rawkets/jquery-1.11.2.min.js"></script>
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
     <script>require("web/static/js/app")</script>
@@ -32,15 +42,15 @@
         <table class="table">
           <tr>
             <td></td>
-            <td><button type="button" class="move" data-move="38"></button></td>
+            <td><button type="button" class="move" data-move="38"><img src="<%= static_path(@conn, "/images/up.png") %>"/></button></td>
             <td></td>
             <td></td>
           </tr>
           <tr>
-            <td><button type="button" class="move" data-move="37"></button></td>
+            <td><button type="button" class="move" data-move="37"><img src="<%= static_path(@conn, "/images/rotate_left.png") %>"/></button></td>
             <td></td>
-            <td><button type="button" class="move" data-move="39"></button></td>
-            <td style="padding-left:75px;"><button type="button" class="move" style="width:115px" data-move="32">PEW PEW</button></td>
+            <td><button type="button" class="move" data-move="39"><img class="img-flip" src="<%= static_path(@conn, "/images/rotate_left.png") %>"/></span></button></td>
+            <td style="padding-left:75px;"><button type="button" class="move" style="width:115px" data-move="32">PEW! PEW!</button></td>
           </tr>
         </table>
       </div>
