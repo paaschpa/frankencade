@@ -1,14 +1,24 @@
+TODO
++connect to rawkets network
++open ssh to PI 2
++open command line
++set up PI2 start app open browser
++Welcome
+++Make sure screens are visible
+++gvim > set guifont=*
+++terminal > properties > font
+++vimgrep /pattern/j **\*.js
+
+export PATH="/opt/elixir/bin:$PATH"
+
 FRESH
 + mix deps.get --only prod
 
 MIX_ENV=prod mix compile
-
 brunch build --production
 MIX_ENV=prod mix phoenix.digest
-
 MIX_ENV=prod PORT=4000 mix phoenix.server
 
-export PATH="/opt/elixir/bin:$PATH"
 
 +expand disk
 ++raspi-config
@@ -30,8 +40,4 @@ export PATH="/opt/elixir/bin:$PATH"
 ++erl -name me@127.0.0.1 -setcookie 123 -run observer
 ++connect to server@127.0.0.1
 
-+Welcome
-++Make sure screens are visible
-++gvim > set guifont=*
-++terminal > properties > fon
-++vimgrep /pattern/j **\*.js
+
